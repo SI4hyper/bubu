@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Theme</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f5e6c8;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+        }
+
+        .door-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.3s ease;
+        }
+
+        .door-container:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+
+        .door {
+            width: 300px;
+            height: 400px;
+            background-image: url('https://cdn.modrinth.com/data/rcYeAapx/04b0688c0bfbf4609d1d4dd03525503da5ea2a2d.png');
+            background-size: cover;
+            border: 4px solid #5D4037;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 1s;
+            transform-origin: left center;
+        }
+
+        .door.open {
+            transform: perspective(1000px) rotateY(-90deg);
+        }
+
+        .message {
+            position: absolute;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 24px;
+            color: #FF5252;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        .message.show {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .dog {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background-image: url('https://scontent.fbkk4-4.fna.fbcdn.net/v/t39.30808-6/517333500_4216977615197798_1579121333796537367_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeFjRECmZrcoG1S_PiPh6RAYem450fAfCol6bjnR8B8KiSHL-xWBt3WFD_r7yIWAR7oP7FwBOdqoVCsXA6dsd8zy&_nc_ohc=jSImGpw9-I0Q7kNvwG_g_VZ&_nc_oc=Adnjgmql99DcrHC5G-VD6PW4sy5TOMNli85PDBlYJZn6poI0m_6HXiqy8IVR4aVE2SE&_nc_zt=23&_nc_ht=scontent.fbkk4-4.fna&_nc_gid=abHeeXrdRYdlSsdy45Yxsw&oh=00_AfUiRcr0KtYGTYNA_RKedBA3AmQ_-xA1YlvEqDm4rHSLTg&oe=68A079E2');
+            background-size: cover;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0;
+            transition: all 1.5s ease-out;
+            z-index: 5;
+        }
+
+        .dog.visible {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(3);
+        }
+
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-image: url('https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/366d9c78-761d-42ae-bbad-46eea5df6e1f.png');
+            background-size: cover;
+            opacity: 0;
+            animation: floatUp 2s forwards;
+            z-index: 20;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+        }
+
+        .background-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .minecraft-block {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-color: #8BC34A;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="background-elements" id="blocks"></div>
+        <div class="door-container" id="door-container">
+            <div class="message" id="message">ที่รักตื่นยังค้าบบบบ</div>
+            <div class="door" id="door"></div>
+        </div>
+        <div class="dog" id="dog" style="transform: translate(-50%, -50%) scale(0.1);"></div>
+    </div>
+
+    <audio id="knock-sound" preload="auto">
+        <source src="https://www.soundjay.com/door/door-knock-1.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="door-open-sound" preload="auto">
+        <source src="https://www.soundjay.com/appliances/coffee-pot-set-down-1.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="dog-sound" preload="auto">
+        <source src="https://www.epidemicsound.com/sound-effects/tracks/4dae3bb9-b7bd-4f44-90dd-872350dfbc50/" type="audio/mpeg">
+    </audio>
+    <audio id="kiss-sound" preload="auto">
+        <source src="https://www.soundjay.com/button/sounds/button-3.mp3" type="audio/mpeg"> <!-- เสียงจุ๊บ -->
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const door = document.getElementById('door');
+            const doorContainer = document.getElementById('door-container');
+            const message = document.getElementById('message');
+            const dog = document.getElementById('dog');
+            const knockSound = document.getElementById('knock-sound');
+            const doorOpenSound = document.getElementById('door-open-sound');
+            const dogSound = document.getElementById('dog-sound');
+            const kissSound = document.getElementById('kiss-sound');
+            const blocksContainer = document.getElementById('blocks');
+
+            // Create Minecraft background blocks
+            for (let i = 0; i < 30; i++) {
+                const block = document.createElement('div');
+                block.className = 'minecraft-block';
+                block.style.top = `${Math.random() * 100}%`;
+                block.style.left = `${Math.random() * 100}%`;
+                blocksContainer.appendChild(block);
+            }
+
+            let doorOpened = false; // ตัวแปรเพื่อตรวจสอบว่าเปิดประตูแล้วหรือยัง
+
+            doorContainer.addEventListener('click', function() {
+                if (!doorOpened) { // ตรวจสอบว่าเปิดประตูแล้วหรือยัง
+                    doorOpened = true; // ตั้งค่าตัวแปรว่าเปิดประตูแล้ว
+                    // Knock sound and show message
+                    knockSound.play();
+                    message.classList.add('show');
+
+                    // After 1 second, open door
+                    setTimeout(() => {
+                        door.classList.add('open');
+                        doorOpenSound.play();
+                        
+                        // After door opens, show dog
+                        setTimeout(() => {
+                            dog.classList.add('visible');
+                            dogSound.play();
+
+                            // Create hearts when dog appears
+                            for (let i = 0; i < 10; i++) {
+                                setTimeout(() => {
+                                    createHeart();
+                                }, i * 200);
+                            }
+
+                            // หลังจากนั้นให้ซูมขนาดน้องหมาและแสดงข้อความใหม่
+                            setTimeout(() => {
+                                dog.style.transform = 'translate(-50%, -50%) scale(2)'; // ซูมขนาดน้องหมา
+                                message.innerText = "ไม่ตื่นจะจุ๊บแล้วนะ บุบุ้"; // เปลี่ยนข้อความ
+                                message.classList.add('show'); // แสดงข้อความใหม่
+                                kissSound.play(); // เล่นเสียงจุ๊บ
+
+                                // สร้างหัวใจเมื่อแสดงข้อความใหม่
+                                for (let i = 0; i < 10; i++) {
+                                    setTimeout(() => {
+                                        createHeart();
+                                    }, i * 200);
+                                }
+                            }, 1500); // รอ 1.5 วินาทีก่อนแสดงข้อความใหม่
+                        }, 1000);
+                    }, 1000);
+                }
+            });
+
+            function createHeart() {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.style.left = `${Math.random() * 90 + 5}%`;
+                heart.style.bottom = '60px';
+                document.querySelector('.container').appendChild(heart);
+
+                // Remove heart after animation
+                setTimeout(() => {
+                    heart.remove();
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>
